@@ -1,19 +1,26 @@
 <?php
-    echo "<h2>Advance Form Handling with security</h2>";
+    /*
+ * FILE: advanced_forms.php
+ * PURPOSE: Learn advanced form handling with security
+ * AUTHOR: Co3code with Seek
+ */
 
-    //securitu function
+    echo "<h2>Advanced Form Handling with Security</h2>";
 
-    //function santize input data
+    // ====================
+    // SECURITY FUNCTIONS
+    // ====================
 
+    // Function to sanitize input data
     function sanitizeInput($data)
     {
-        $data = trim($data);             // remove whitespace
-        $data = stripcslashes($data);    // remove backslashe
-        $data = htmlspecialchars($data); // conver special characters
+        $data = trim($data);             // Remove whitespace
+        $data = stripslashes($data);     // Remove backslashes
+        $data = htmlspecialchars($data); // Convert special characters
         return $data;
     }
 
-    //fucntionm to validate email format
+    // Function to validate email format
     function validateEmail($email)
     {
         if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -23,111 +30,127 @@
         }
     }
 
-    //function to validate password strenght
+    // Function to validate password strength
     function validatePassword($password)
     {
-        //at least 8 characters, 1 uppercaseeee, 1 lowercase, 1 numer
+        // At least 8 characters, 1 uppercase, 1 lowercase, 1 number
         $pattern = "/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/";
         return preg_match($pattern, $password);
     }
 
-    //fomr  processing logic
+    // ====================
+    // FORM PROCESSING LOGIC
+    // ====================
+
     $formErrors     = [];
     $successMessage = "";
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        // I SANITIZE DAYN NATO TANANA INPUTS
+        // Sanitize all inputs
         $name     = sanitizeInput($_POST["name"]);
         $email    = sanitizeInput($_POST["email"]);
-        $password = $_POST["password"]; // take note dont sanitize password before hashing
+        $password = $_POST["password"]; // Don't sanitize password before hashing
         $age      = sanitizeInput($_POST["age"]);
 
-        //validate checks
+        // Validation checks
         if (empty($name)) {
-            $formErrors[] = "name is required";
+            $formErrors[] = "Name is required";
         } elseif (strlen($name) < 2) {
-            $formErrors[] = "name must be at least 2 characters";
+            $formErrors[] = "Name must be at least 2 characters";
         }
 
         if (empty($email)) {
-            $formErrors[] = "email is required";
+            $formErrors[] = "Email is required";
         } elseif (! validateEmail($email)) {
-            $formErrors[] = "invalid email format";
+            $formErrors[] = "Invalid email format";
         }
 
         if (empty($password)) {
-            $formErrors[] = "password is required";
-
+            $formErrors[] = "Password is required";
         } elseif (! validatePassword($password)) {
-            $formErrors[] = "password must be at least 8 characters with uppercase,lowercase, and number";
+            $formErrors[] = "Password must be at least 8 characters with uppercase, lowercase, and number";
         }
 
         if (empty($age)) {
-            $formErrors[] = "age is required";
-
+            $formErrors[] = "Age is required";
         } elseif (! is_numeric($age) || $age < 1 || $age > 120) {
-            $formErrors[] = "age must be a valid number between 1 and 120 wow";
+            $formErrors[] = "Age must be a valid number between 1 and 120";
         }
 
-        //if no error, process the form
+        // If no errors, process the form
         if (empty($formErrors)) {
-            $successMessage = "form submitted successfully";
-            //$hasedpassword = password_hash($password , PASSWORD_DEFAULT);
+            $successMessage = "Form submitted successfully!";
+            // In real application, you would save to database here
+            // $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
         }
     }
 
-    //Display form result
+    // ====================
+    // DISPLAY FORM OR RESULTS
+    // ====================
 
     if (! empty($successMessage)) {
-        // FIXED: missing "<" + incorrect background spelling + incorrect padding syntax
-        echo "<div style='background:#d4edda; color:#155724; padding:15px; margin:20px 0; border-radius:5px;'>";
-
-        echo "<h3>Sucess!</h3>";
-        echo "$successMessage<br>";
-        echo "Name:" . (isset($name) ? $name : '') . "<br>";
-        echo "Email:" . (isset($email) ? $email : '') . "<br>";
-        echo "Age:" . (isset($age) ? $age : '') . "<br>";
+        echo "<div style='background: #d4edda; color: #155724; padding: 15px; margin: 20px 0; border-radius: 5px;'>";
+        echo "<h3>Success!</h3>";
+        echo $successMessage;
+        echo "<br><br>Form Data Received (Sanitized):<br>";
+        echo "Name: " . (isset($name) ? $name : '') . "<br>";
+        echo "Email: " . (isset($email) ? $email : '') . "<br>";
+        echo "Age: " . (isset($age) ? $age : '') . "<br>";
         echo "</div>";
 
-        echo "<a href='" . $_SERVER['PHP_SELF'] . "'>Submit another form</a>";
-
+        echo "<a href='" . $_SERVER['PHP_SELF'] . "'>Submit Another Form</a>";
     } else {
-        //display error if any
+        // Display errors if any
         if (! empty($formErrors)) {
-
-            echo "<div style='background:#f8d7da; color:#721c25; padding:15px; margin:20px 0; border-radius:5px;'>";
-            echo "<h3>validation errors:</h3>";
+            echo "<div style='background: #f8d7da; color: #721c24; padding: 15px; margin: 20px 0; border-radius: 5px;'>";
+            echo "<h3>Validation Errors:</h3>";
             echo "<ul>";
             foreach ($formErrors as $error) {
                 echo "<li>" . $error . "</li>";
             }
             echo "</ul>";
             echo "</div>";
-
         }
+    ?>
 
+    <!-- Advanced Form with Validation -->
+    <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" style="max-width: 500px; margin: 0 auto;">
+        <h3>Advanced Registration Form</h3>
+
+        <div style="margin-bottom: 15px;">
+            <label>Full Name:</label><br>
+            <input type="text" name="name" value="<?php echo isset($name) ? $name : ''; ?>"
+                   style="width: 100%; padding: 8px; margin-top: 5px;">
+            <small>Minimum 2 characters</small>
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label>Email Address:</label><br>
+            <input type="email" name="email" value="<?php echo isset($email) ? $email : ''; ?>"
+                   style="width: 100%; padding: 8px; margin-top: 5px;">
+            <small>Must be valid email format</small>
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label>Password:</label><br>
+            <input type="password" name="password"
+                   style="width: 100%; padding: 8px; margin-top: 5px;">
+            <small>8+ characters with uppercase, lowercase, and number</small>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <label>Age:</label><br>
+            <input type="number" name="age" value="<?php echo isset($age) ? $age : ''; ?>"
+                   min="1" max="120" style="width: 100%; padding: 8px; margin-top: 5px;">
+            <small>Between 1 and 120</small>
+        </div>
+
+        <button type="submit" style="background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
+            Submit Registration
+        </button>
+    </form>
+
+    <?php
     }
-?>
-
-<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
-
-
-<label for="">fullname:</label><br>
-<input type="text" name="fullname" required> <br><br>
-<small>Minimum 2 characters</small>
-
-<label for="">Email Address:</label><br>
-<input type="text" name="email"required> <br><br>
-<small>Must be valid email format</small>
-
-
-<label for="">Password</label><br>
-<input type="password" name="password" required><br><br>
-<small>8+ characters with uppercase, lowercase, and number</small>
-
- <label for="">Age:</label><br>
- <input type="number" name="age"><br><br>
-
- <button type="submit"> submit registration </button>
-
-</form>
+    ?>

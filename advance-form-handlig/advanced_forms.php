@@ -8,11 +8,7 @@
     // 1. Include database configuration
     require_once 'db_config.php';
 
-    // 2. Check if security_functions.php exists before including
-    //    If file doesn't exist, we'll define functions here
-    if (file_exists('security_functions.php')) {
-        require_once 'security_functions.php';
-    }
+  
 
     echo "<h2>Advanced Form Handling with Security</h2>";
 

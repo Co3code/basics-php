@@ -84,7 +84,9 @@
          <h2>User Login</h2>
          <?php if (! empty($error)): ?>
             <div class="error"><?php echo $success; ?></div>
-         <?php endif; ?>
+
+            
+         <?php endif; // You use this syntax when mixing PHP + HTML, so the code looks cleaner.?>
 
          <?php if (! empty($success)): ?>
             <div class="success"><?echo $success;?></div>
